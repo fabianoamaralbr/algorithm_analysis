@@ -1,4 +1,4 @@
-[Home](https://raw.githubusercontent.com/fabianoamaralbr/algorithm_analysis/refs/heads/main/README.md) | [Decision Tree Intro](intro_decision_tree.md)
+[Home](https://github.com/fabianoamaralbr/algorithm_analysis/blob/main/README.md) | [Decision Tree Intro](intro_decision_tree.md)
 
 # Árvore de Classificação
 
