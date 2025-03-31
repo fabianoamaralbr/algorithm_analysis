@@ -1,3 +1,5 @@
+[Home](https://raw.githubusercontent.com/fabianoamaralbr/algorithm_analysis/refs/heads/main/README.md)
+
 # Decision Tree
 
 A Árvore de Decisão (Decision Tree) é um dos algoritmos mais populares em machine learning e aprendizado supervisionado. Ele é usado tanto para classificação quanto para regressão, ajudando a tomar decisões com base em perguntas sequenciais e ramificadas que se assemelham a uma árvore. Cada nó interno da árvore representa uma pergunta ou teste em uma ou mais variáveis de entrada, cada ramo representa o resultado dessa decisão, e cada nó folha (ou terminal) representa uma saída ou decisão final.
