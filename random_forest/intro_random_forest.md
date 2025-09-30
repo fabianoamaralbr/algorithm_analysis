@@ -73,4 +73,4 @@ O Random Forest constrói uma "floresta" de árvores de decisão. A ideia centra
 
 ## Algoritmo Scikit-learn
 
-O scikit-learn oferece implementações otimizadas para RandomForestClassifier (para classificação) e RandomForestRegressor (para regressão). Ambos compartilham muitos parâmetros em comum, controlando a construção e o comportamento da floresta.
+O scikit-learn oferece implementações otimizadas para [RandomForestClassifier](RandomForestClassifier.md) (para classificação) e RandomForestRegressor (para regressão). Ambos compartilham muitos parâmetros em comum, controlando a construção e o comportamento da floresta.
