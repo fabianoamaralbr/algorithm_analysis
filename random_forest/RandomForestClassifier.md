@@ -162,33 +162,34 @@ Oferece um controle mais granular sobre a complexidade da árvore ao considerar 
 ## `max_features`
 O parâmetro max_features é crucial para o funcionamento do RandomForestClassifier e diferencia as florestas aleatórias de outros métodos de ensemble como o Bagging. Ele controla o número de características (features) que cada árvore de decisão individual considerará ao procurar a melhor divisão em um nó.
 
-Funcionamento Detalhado:
-Subconjunto Aleatório de Features:
+### Funcionamento Detalhado
+- **Subconjunto Aleatório de Features:**<br>
 Em vez de avaliar todas as características disponíveis em um nó (como faria uma árvore de decisão padrão), cada árvore na floresta aleatória seleciona um subconjunto aleatório de max_features características. A melhor divisão é então encontrada apenas entre essas características selecionadas.
 
-Diversidade das Árvores:
+- **Diversidade das Árvores:**<br>
 Essa aleatoriedade na seleção de features garante que as árvores na floresta sejam diversas entre si. Se todas as árvores considerassem todas as features, e houvesse uma feature muito dominante, todas as árvores tenderiam a usar essa mesma feature no topo, tornando-as correlacionadas e diminuindo o benefício do ensemble. max_features reduz essa correlação.
 
-Configurações Possíveis:
+- **Configurações Possíveis:**<br>
 Número inteiro: max_features=5 considera 5 características aleatórias em cada divisão.
 Fração (0.0 a 1.0): max_features=0.5 considera 50% das características totais.
 "sqrt" (padrão para classificação): Considera a raiz quadrada do número total de características (sqrt(n_features)).
 "log2": Considera o logaritmo base 2 do número total de características (log2(n_features)).
 None (equivalente a n_features): Todas as características são consideradas, o que transforma o RandomForest em um Bagging de árvores de decisão.
-Impactos no Modelo:
-Redução de Overfitting:
+
+### Impactos no Modelo:
+- **Redução de Overfitting:**<br>
 Ao introduzir aleatoriedade na seleção de features, max_features diminui a variância do modelo e sua propensão a sobreajuste, pois cada árvore aprende de uma perspectiva ligeiramente diferente.
 
-Eficiência Computacional:
+- **Eficiência Computacional:**<br>
 Considerar apenas um subconjunto de features em cada divisão pode acelerar significativamente o treinamento, especialmente em conjuntos de dados com muitas dimensões.
 
-Balanceamento Viés-Variância:
+- **Balanceamento Viés-Variância:**<br>
 A escolha de max_features envolve um trade-off. Valores menores aumentam a aleatoriedade e reduzem a variância (bom para overfitting), mas podem aumentar o viés (risco de underfitting). Valores maiores reduzem o viés, mas aumentam a variância. "sqrt" é frequentemente um bom ponto de partida para classificação.
 
 ## `max_leaf_nodes`
 O parâmetro max_leaf_nodes no RandomForestClassifier limita o número máximo de nós folha (terminais) que cada árvore de decisão individual pode ter.
 
-Funcionamento Detalhado:
+### Funcionamento Detalhado
 Poda Estrutural:
 Se um valor inteiro for especificado para max_leaf_nodes, cada árvore é construída de forma "best-first", ou seja, as divisões que produzem o maior decréscimo de impureza são priorizadas. O crescimento da árvore para de gerar novos nós folha assim que o número total de nós folha atinge o limite definido, ou se outras condições de pré-poda (como min_samples_split) são satisfeitas.
 
@@ -211,205 +212,226 @@ max_leaf_nodes pode ser usado como uma alternativa ou em conjunto com max_depth 
 ## `min_impurity_decrease`
 O parâmetro min_impurity_decrease no RandomForestClassifier estabelece um limiar mínimo de redução de impureza que uma divisão deve gerar para ser considerada válida. Essa regra é aplicada a cada árvore individualmente na floresta.
 
-Funcionamento Detalhado:
-Limiar de Qualidade da Divisão:
+### Funcionamento Detalhado
+- **Limiar de Qualidade da Divisão:**<br>
 Quando o algoritmo avalia uma possível divisão em um nó, ele calcula o quanto essa divisão reduziria a impureza (conforme definido por criterion, Gini ou Entropia). Se essa redução for menor que o valor de min_impurity_decrease, a divisão é descartada e o nó não é dividido.
 
-Prevenção de Divisões Marginais:
+- **Prevenção de Divisões Marginais:**<br>
 Este parâmetro impede que as árvores realizem divisões que ofereçam apenas ganhos muito pequenos em termos de pureza, o que muitas vezes corresponde a capturar ruídos ou detalhes insignificantes nos dados de treinamento.
 
-Impacto no RandomForest:
-Regularização e Redução de Overfitting:
+### Impacto no RandomForest
+- **Regularização e Redução de Overfitting:**<br>
 Ao filtrar divisões com ganhos mínimos, min_impurity_decrease contribui para a regularização das árvores individuais, tornando-as menos propensas a sobreajuste. Isso, por sua vez, melhora a capacidade de generalização da floresta aleatória.
 
-Simplificação da Árvore:
+- **Simplificação da Árvore:**<br>
 Valores mais altos levam a árvores mais simples, com menos ramificações, pois apenas as divisões mais "impactantes" são permitidas.
 
-Ajuste Fino:
+- **Ajuste Fino:**<br>
 Pode ser usado para ajustar a complexidade do modelo de forma fina, especialmente em conjunto com outros parâmetros de poda.
 
 ## `bootstrap`
 O parâmetro bootstrap é um dos pilares do RandomForestClassifier, fundamental para introduzir a aleatoriedade e diversidade entre as árvores. Ele determina se amostras de bootstrap são usadas para construir cada árvore.
 
-Funcionamento Detalhado:
-bootstrap=True (Padrão):
+### Funcionamento Detalhado
+- **bootstrap=True (Padrão):**<br>
 Amostragem com Reposição: Para cada árvore na floresta, um subconjunto de amostras de treinamento é selecionado aleatoriamente com reposição. Isso significa que algumas amostras podem ser selecionadas várias vezes, enquanto outras podem não ser selecionadas de forma alguma para a construção de uma árvore específica.
-Diversidade: Essa amostragem com reposição cria diferentes conjuntos de treinamento para cada árvore, o que, por sua vez, resulta em árvores de decisão ligeiramente diferentes e menos correlacionadas. A diversidade é crucial para o desempenho do ensemble.
-Amostras Out-of-Bag (OOB): As amostras que não são selecionadas para o conjunto de treinamento de uma árvore específica são chamadas de amostras "out-of-bag". Elas podem ser usadas para uma validação interna do modelo (ver oob_score).
-bootstrap=False:
+
+- **Diversidade:**<br>
+Essa amostragem com reposição cria diferentes conjuntos de treinamento para cada árvore, o que, por sua vez, resulta em árvores de decisão ligeiramente diferentes e menos correlacionadas. A diversidade é crucial para o desempenho do ensemble.
+
+- **Amostras Out-of-Bag (OOB):**<br>
+As amostras que não são selecionadas para o conjunto de treinamento de uma árvore específica são chamadas de amostras "out-of-bag". Elas podem ser usadas para uma validação interna do modelo (ver oob_score).
+
+- **bootstrap=False:**<br>
 Sem Amostragem com Reposição: Cada árvore é treinada com o conjunto de dados de treinamento completo.
 Aumento da Correlação: Sem a aleatoriedade da amostragem, as árvores tendem a ser mais correlacionadas entre si, o que pode diminuir a eficácia do método de ensemble, pois os erros de uma árvore podem se replicar em outras. Geralmente, bootstrap=False não é recomendado para RandomForest, pois reduz a capacidade do algoritmo de reduzir a variância.
-Impacto no RandomForest:
-Redução da Variância:
+
+### Impacto no RandomForest
+- **Redução da Variância:**<br>
 A amostragem de bootstrap é a principal forma pela qual o RandomForest reduz a variância em comparação com uma única árvore de decisão. Ao treinar árvores em diferentes subconjuntos de dados, o erro médio das previsões do ensemble é mais estável.
 
-Robustez:
+- **Robustez:**<br>
 Torna o modelo mais robusto a pequenas variações nos dados de treinamento.
 
-Habilitação de OOB Score:
+- **Habilitação de OOB Score:**<br>
 Quando bootstrap=True, o oob_score pode ser ativado para uma estimativa imparcial do erro de generalização sem a necessidade de um conjunto de validação separado.
 
-oob_score
+## `oob_score`
 O parâmetro oob_score (out-of-bag score) permite estimar a capacidade de generalização do RandomForestClassifier sem a necessidade de um conjunto de validação separado. Esta funcionalidade só está disponível quando bootstrap=True.
 
-Funcionamento Detalhado:
-Amostras Out-of-Bag (OOB):
+### Funcionamento Detalhado
+- **Amostras Out-of-Bag (OOB):**<br>
 Quando bootstrap=True, para cada árvore na floresta, aproximadamente um terço das amostras originais não são usadas para o seu treinamento. Essas são as amostras "out-of-bag".
 
-Validação Interna:
+- **Validação Interna:**<br>
 A previsão para cada amostra OOB é feita usando apenas as árvores que não a viram durante o treinamento. A agregação dessas previsões para todas as amostras OOB permite calcular uma pontuação de erro. Esta pontuação é uma estimativa imparcial do erro de generalização do modelo final.
 
-oob_score=True:
+### oob_score=True:
 Se ativado, o modelo calcula e armazena a pontuação OOB após o treinamento. Essa pontuação pode ser acessada através do atributo oob_score_ do modelo treinado.
 
-oob_score=False (Padrão):
+### oob_score=False (Padrão):
 O cálculo da pontuação OOB não é realizado, economizando tempo computacional, mas exigindo um conjunto de validação externo para avaliar o modelo.
 
-Impacto no RandomForest:
-Estimativa Imparcial:
+### Impacto no RandomForest
+- **Estimativa Imparcial:**<br>
 O score OOB fornece uma estimativa de desempenho que é tão boa quanto uma validação cruzada k-fold, mas com o benefício de não precisar dividir explicitamente os dados em conjuntos de treinamento e validação.
 
-Redução da Necessidade de Validação Cruzada:
+- **Redução da Necessidade de Validação Cruzada:**<br>
 Em muitos casos, o oob_score pode ser suficiente para avaliar o desempenho do modelo, o que pode ser conveniente para conjuntos de dados grandes onde a validação cruzada completa seria computacionalmente intensiva.
 
-Eficiência Computacional:
+### Eficiência Computacional
 Apesar de ser um cálculo adicional, é mais eficiente do que realizar uma validação cruzada k-fold completa em termos de tempo de treinamento total, pois os dados OOB já estão "naturalmente" separados.
 
-n_jobs
+## `n_jobs`
 O parâmetro n_jobs no RandomForestClassifier controla quantos processos ou threads a biblioteca pode usar para executar tarefas em paralelo. Em um algoritmo de ensemble como o Random Forest, onde múltiplas árvores são construídas independentemente, a paralelização pode acelerar significativamente o tempo de treinamento.
 
-Funcionamento Detalhado:
-Paralelização da Construção de Árvores:
+### Funcionamento Detalhado
+- **Paralelização da Construção de Árvores:**<br>
 A construção de cada árvore na floresta é uma tarefa independente. n_jobs permite que essas tarefas sejam distribuídas entre múltiplos núcleos de CPU ou processadores.
 
-Valores Possíveis:
+- **Valores Possíveis:**<br>
 1 (Padrão): Nenhuma paralelização. Apenas um processo/thread é usado.
 -1: Utiliza todos os processadores ou núcleos disponíveis na máquina. Esta é frequentemente a melhor opção para maximizar a velocidade de treinamento, desde que haja memória suficiente.
 Qualquer número inteiro positivo: Especifica o número exato de processos/threads a serem usados. Por exemplo, n_jobs=4 usaria 4 núcleos.
-Impacto no RandomForest:
+
+### Impacto no RandomForest
 Aceleração do Treinamento:
 É o principal benefício. Para conjuntos de dados grandes e um número elevado de estimadores (n_estimators), a paralelização pode reduzir dramaticamente o tempo de fit.
 
-Consumo de Recursos:
+### Consumo de Recursos
 Utilizar muitos jobs pode aumentar o consumo de memória, pois cada processo/thread pode precisar carregar uma parte dos dados ou do modelo. Deve-se monitorar o uso de memória ao usar n_jobs=-1.
 
-Performance em Sistemas Multiprocessados:
+### Performance em Sistemas Multiprocessados
 A eficácia de n_jobs é maior em máquinas com múltiplos núcleos. Em um sistema com apenas um núcleo, definir n_jobs para qualquer valor diferente de 1 pode, na verdade, adicionar sobrecarga de gerenciamento de processos, resultando em um treinamento mais lento.
 
-random_state
+## `random_state`
 O parâmetro random_state no RandomForestClassifier é crucial para garantir a reprodutibilidade dos resultados, controlando a aleatoriedade em múltiplos estágios do algoritmo.
 
-Funcionamento Detalhado:
-Aleatoriedade Controlada:
+### Funcionamento Detalhado
+- **Aleatoriedade Controlada:**<br>
 O RandomForestClassifier utiliza aleatoriedade em duas etapas principais:
 
-Amostragem de Bootstrap: Se bootstrap=True (padrão), random_state controla a seleção aleatória de amostras com reposição para construir cada árvore.
-Seleção de Características: Se max_features não for None (o que é comum no RandomForest), random_state controla a seleção aleatória de subconjuntos de características em cada nó para encontrar a melhor divisão.
-Reprodutibilidade:
+- **Amostragem de Bootstrap:**<br>
+Se bootstrap=True (padrão), random_state controla a seleção aleatória de amostras com reposição para construir cada árvore.
+- **Seleção de Características:**<br>
+Se max_features não for None (o que é comum no RandomForest), random_state controla a seleção aleatória de subconjuntos de características em cada nó para encontrar a melhor divisão.
+
+- **Reprodutibilidade:**<br>
 Ao definir um valor inteiro específico para random_state (e manter as demais configurações do modelo e os dados de entrada iguais), o treinamento do RandomForestClassifier se tornará completamente determinístico. Isso significa que o modelo construirá exatamente as mesmas árvores e fará as mesmas previsões em execuções repetidas.
 
-Impacto no RandomForest:
-Consistência de Experimentos:
+### Impacto no RandomForest
+- **Consistência de Experimentos:**<br>
 Essencial para comparar diferentes configurações de hiperparâmetros ou arquiteturas de modelo, pois garante que qualquer diferença nos resultados não seja devido à aleatoriedade.
 
-Depuração e Validação:
+### Depuração e Validação
 Facilita a depuração, pois o comportamento do modelo pode ser reproduzido com precisão. Ajuda na validação de modelos ao replicar os resultados.
 
-Busca de Hiperparâmetros:
+### Busca de Hiperparâmetros
 Quando se realiza busca por grade (Grid Search) ou busca aleatória (Randomized Search) para otimizar os hiperparâmetros, manter random_state fixo ajuda a garantir que a aleatoriedade seja apenas nos parâmetros sendo testados, não na construção do modelo base.
 
-verbose
+## `verbose`
 O parâmetro verbose no RandomForestClassifier controla o nível de verbosidade do processo de treinamento. Ele determina a quantidade de mensagens que o modelo imprimirá no console durante sua execução.
 
-Funcionamento Detalhado:
-Informações em Tempo Real:
+### Funcionamento Detalhado
+- **Informações em Tempo Real:**<br>
 Quando verbose é configurado para um valor maior que 0, o modelo começa a emitir mensagens que fornecem insights sobre o progresso do treinamento, como o número de árvores sendo construídas, o tempo restante estimado ou informações sobre as etapas de processamento.
 
-Valores Possíveis:
+- **Valores Possíveis:**<br>
 0 (Padrão): Não imprime nenhuma mensagem de verbosidade (modo silencioso).
 1: Imprime mensagens básicas de progresso.
 2 (ou valores maiores): Imprime mensagens mais detalhadas sobre o progresso e o processo de construção das árvores.
-Impacto no RandomForest:
-Monitoramento do Treinamento:
+
+### Impacto no RandomForest
+- **Monitoramento do Treinamento:**<br>
 É útil para monitorar o andamento de treinamentos longos, especialmente quando o número de estimadores (n_estimators) é grande. Permite ao usuário ter uma ideia de quanto tempo o treinamento ainda levará.
 
-Depuração:
+- **Depuração:**<br>
 Em alguns casos, mensagens verbosas podem ajudar a identificar se o treinamento está estagnado ou se algum problema está ocorrendo.
 
-Sobrecarga Mínima:
+- **Sobrecarga Mínima:**<br>
 Apesar de imprimir mais mensagens, o impacto de verbose no desempenho geral do treinamento é geralmente mínimo.
 
-warm_start
+## `warm_start`
 O parâmetro warm_start no RandomForestClassifier oferece uma funcionalidade avançada para o treinamento de modelos de ensemble, permitindo que o modelo seja treinado incrementalmente.
 
-Funcionamento Detalhado:
-Treinamento Incremental:
+### Funcionamento Detalhado
+- **Treinamento Incremental:**<br>
 Quando warm_start é definido como True, a chamada subsequente ao método fit não reinicia o treinamento do zero. Em vez disso, ela reutiliza os estimadores (árvores) já construídos na chamada anterior e adiciona mais estimadores para alcançar o novo valor de n_estimators.
 
-warm_start=False (Padrão):
+- **warm_start=False (Padrão):**<br>
 Se warm_start for False (o padrão), cada chamada ao método fit inicializa uma nova floresta de árvores, descartando quaisquer árvores previamente construídas.
 
-Impacto no RandomForest:
-Eficiência no Ajuste de Hiperparâmetros:
+### Impacto no RandomForest
+_ **Eficiência no Ajuste de Hiperparâmetros:**<br>
 Experimentação: Útil para experimentar diferentes números de n_estimators sem precisar retreinar a floresta inteira do zero a cada vez. Você pode começar com poucas árvores, avaliar o desempenho e, se necessário, adicionar mais árvores gradualmente.
 Otimização: Permite a otimização de n_estimators de forma mais eficiente, pois você pode treinar o modelo com um pequeno número de árvores e, em seguida, adicionar mais em etapas, parando quando o desempenho não melhorar significativamente.
-Limitações e Cuidados:
-n_estimators Deve Aumentar: Para que warm_start=True seja eficaz, o valor de n_estimators deve ser maior na chamada subsequente de fit do que na anterior. Se for menor, as árvores excedentes serão removidas.
-Parâmetros Invariantes: Outros parâmetros do modelo (como max_depth, criterion, etc.) devem permanecer os mesmos entre as chamadas fit ao usar warm_start, caso contrário, o comportamento pode ser indefinido ou levar a resultados inesperados.
-Uso de Atributos: Após o treinamento incremental, atributos como feature_importances_ e oob_score_ serão atualizados para refletir a floresta completa.
-class_weight
+
+### Limitações e Cuidados
+- **n_estimators Deve Aumentar:**<br>
+Para que warm_start=True seja eficaz, o valor de n_estimators deve ser maior na chamada subsequente de fit do que na anterior. Se for menor, as árvores excedentes serão removidas.
+- **Parâmetros Invariantes:**<br>
+Outros parâmetros do modelo (como max_depth, criterion, etc.) devem permanecer os mesmos entre as chamadas fit ao usar warm_start, caso contrário, o comportamento pode ser indefinido ou levar a resultados inesperados.
+- **Uso de Atributos:**<br>
+Após o treinamento incremental, atributos como feature_importances_ e oob_score_ serão atualizados para refletir a floresta completa.
+
+## `class_weight`
 O parâmetro class_weight no RandomForestClassifier permite atribuir pesos diferentes às classes, influenciando como o modelo lida com desequilíbrios de classe durante o treinamento de cada árvore.
 
-Funcionamento Detalhado:
-Ponderação do Erro:
+### Funcionamento Detalhado
+- **Ponderação do Erro:**<br>
 Durante o treinamento de cada árvore na floresta, o class_weight ajusta o cálculo da impureza (Gini ou Entropia) e, consequentemente, a seleção das divisões. Erros em classes com peso maior terão uma penalidade maior, forçando o modelo a prestar mais atenção a essas classes.
 
-Cenários de Desequilíbrio:
+- **Cenários de Desequilíbrio:**<br>
 É extremamente útil em problemas de classificação com classes desbalanceadas, onde uma classe minoritária é de grande interesse (ex: detecção de fraudes, doenças raras). Sem pesos, a classe majoritária dominaria o treinamento, levando a um modelo que pode ter alta acurácia geral, mas baixa capacidade de prever a classe minoritária.
 
-Definições Possíveis:
-None (Padrão): Todas as classes são consideradas igualmente importantes.
-"balanced": Calcula os pesos automaticamente, inversamente proporcionais à frequência de cada classe no conjunto de treinamento. Isso significa que classes minoritárias recebem pesos maiores.
-"balanced_subsample": Similar a "balanced", mas os pesos são calculados com base nas amostras de bootstrap para cada árvore individualmente. Isso pode ser mais eficaz quando o desequilíbrio é extremo.
-Dicionário: Permite especificar pesos personalizados para cada classe. Exemplo: {0: 1, 1: 10} onde a classe 1 tem 10 vezes mais peso que a classe 0.
-Impacto no RandomForest:
-Melhoria na Detecção de Classes Minoritárias:
+### Definições Possíveis
+- **None (Padrão):**<br>
+Todas as classes são consideradas igualmente importantes.
+- **"balanced":**<br>
+Calcula os pesos automaticamente, inversamente proporcionais à frequência de cada classe no conjunto de treinamento. Isso significa que classes minoritárias recebem pesos maiores.
+- **"balanced_subsample":**<br>
+Similar a "balanced", mas os pesos são calculados com base nas amostras de bootstrap para cada árvore individualmente. Isso pode ser mais eficaz quando o desequilíbrio é extremo.
+- **Dicionário:**<br>
+Permite especificar pesos personalizados para cada classe. Exemplo: {0: 1, 1: 10} onde a classe 1 tem 10 vezes mais peso que a classe 0.
+
+### Impacto no RandomForest
+- **Melhoria na Detecção de Classes Minoritárias:**<br>
 Ao aumentar o peso das classes minoritárias, o modelo é incentivado a fazer divisões que melhor as separem, resultando em maior recall e precisão para essas classes.
 
-Trade-off:
+- **Trade-off:**<br>
 Pode haver um trade-off com a acurácia geral, pois o modelo pode sacrificar um pouco da performance na classe majoritária para melhorar a da minoritária. A escolha depende da métrica de avaliação relevante para o problema (F1-score, recall, precisão, etc.).
 
-Consistência na Floresta:
+- **Consistência na Floresta:**<br>
 Cada árvore individual na floresta utilizará o esquema de class_weight para seu próprio treinamento, e a combinação dessas árvores ponderadas resulta em um modelo final que considera o desequilíbrio de classes.
 
-ccp_alpha
+## `ccp_alpha`
 O parâmetro ccp_alpha (Minimal Cost-Complexity Pruning Alpha) permite aplicar uma técnica de poda de custo-complexidade às árvores individuais dentro do RandomForestClassifier. Esta é uma estratégia de pós-poda que pode simplificar as árvores e melhorar a generalização.
 
-Funcionamento Detalhado:
-Poda de Custo-Complexidade:
+### Funcionamento Detalhado
+- **Poda de Custo-Complexidade:**<br>
 Essa técnica remove os ramos "menos importantes" de uma árvore que não contribuem significativamente para a redução da impureza em relação ao aumento de sua complexidade. O ccp_alpha atua como um limiar: um ramo só será mantido se sua contribuição para a redução da impureza (ajustada pelo número de nós) for maior que ccp_alpha.
 
-Árvores Individuais Podadas:
+- **Árvores Individuais Podadas:**<br>
 Cada árvore no RandomForest é construída até sua profundidade máxima (ou até atingir outras condições de pré-poda) e, em seguida, é podada usando o valor de ccp_alpha.
 
-Impacto no RandomForest:
-Regularização das Árvores:
+### Impacto no RandomForest
+- **Regularização das Árvores:**<br>
 A poda individual de cada árvore com ccp_alpha ajuda a simplificá-las, tornando-as menos propensas a sobreajuste aos dados de treinamento específicos de seu bootstrap.
 
-Melhoria da Generalização:
+- **Melhoria da Generalização:**<br>
 Ao remover ramos que podem estar capturando ruídos, a poda pode levar a árvores mais robustas e, consequentemente, a uma floresta com melhor capacidade de generalização.
 
-Controle Fino da Complexidade:
+- **Controle Fino da Complexidade:**<br>
 Pode ser utilizado para ajustar o balanço entre viés e variância. Um valor de ccp_alpha muito alto resultará em árvores muito podadas (simples), potencialmente levando a subajuste. Um valor muito baixo (próximo de 0, que é o padrão) significará pouca ou nenhuma poda.
 
-Desempenho Computacional:
+### Desempenho Computacional
 A poda pode levar a árvores menores, o que pode resultar em inferências mais rápidas, embora o processo de poda em si adicione um pequeno custo computacional durante o treinamento.
 
-max_samples
+## `max_samples`
 O parâmetro max_samples no RandomForestClassifier é usado em conjunto com bootstrap=True para controlar o número (ou fração) de amostras do conjunto de treinamento original que são utilizadas para treinar cada árvore individualmente na floresta.
 
-Funcionamento Detalhado:
-Subamostragem Controlada:
+### Funcionamento Detalhado
+- **Subamostragem Controlada:**<br>
 Quando bootstrap=True, cada árvore é treinada em um subconjunto de amostras selecionadas com reposição. max_samples especifica o tamanho desse subconjunto:
 
 Número inteiro: max_samples=100 significa que cada árvore será treinada em 100 amostras (selecionadas com reposição).
@@ -417,15 +439,15 @@ Fração (0.0 a 1.0): max_samples=0.7 significa que cada árvore será treinada 
 Comportamento Padrão (None):
 Se max_samples for None (o padrão), então para bootstrap=True, cada árvore é treinada em n_samples (o número total de amostras no conjunto de treinamento), com reposição. Ou seja, o bootstrap usará amostras do mesmo tamanho do conjunto de treinamento original.
 
-Impacto no RandomForest:
-Introdução de Maior Diversidade:
+### Impacto no RandomForest
+- **Introdução de Maior Diversidade:**<br>
 Ao limitar o número de amostras usadas por cada árvore, mesmo com bootstrap=True, max_samples introduz uma camada adicional de aleatoriedade e diversidade entre as árvores. Isso pode ser particularmente útil em conjuntos de dados muito grandes, onde treinar cada árvore em n_samples completas pode resultar em árvores mais correlacionadas e sobreajustadas.
 
-Redução de Overfitting:
+- **Redução de Overfitting:**<br>
 A subamostragem de dados ajuda a diminuir a variância do modelo, tornando-o menos propenso a sobreajuste, especialmente quando as árvores individuais são muito profundas.
 
-Eficiência Computacional:
+### Eficiência Computacional
 Treinar árvores em subconjuntos menores de dados pode acelerar o processo de treinamento, pois cada árvore manipula um volume menor de dados.
 
-Balanço Viés-Variância:
+- **Balanço Viés-Variância:**<br>
 Valores muito pequenos para max_samples podem levar a árvores com alto viés (subajuste), pois elas não veem dados suficientes para aprender padrões complexos. Valores muito grandes podem reduzir a diversidade e aumentar a variância. O ajuste ideal depende do conjunto de dados.
